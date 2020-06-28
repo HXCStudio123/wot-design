@@ -134,7 +134,7 @@ $-button-normal-border-disabled-color: $-color-bg !default; // 默认按钮禁�
 
 $-button-primary-color: $-color-theme !default; // 主要按钮颜色
 $-button-primary-box-shadow: 0px 2px 4px 0px rgba($-color-theme,0.25) !default; // 主要按钮颜色
-$-button-primary-bg-color: linear-gradient(315deg, mixColor($-color-white, $-color-theme, 0.01111785969062061),rgba(102,141,248,1) 100%,mixColor($-color-white, $-color-theme, 0.14034408637079962))!default; // 主要按钮背景颜色
+$-button-primary-bg-color: linear-gradient(315deg, mixColor($-color-white, $-color-theme, 0.01111785969062061),mixColor($-color-white, $-color-theme, 0.14034408637079962),mixColor($-color-white, $-color-theme, 0.14034408637079962))!default; // 主要按钮背景颜色
 $-button-primary-active-color: linear-gradient(315deg, mixColor($-color-black, $-color-theme, 0.15589315808539794),mixColor($-color-white, $-color-theme, 0.0054489959125264414)) !default; // 主要按钮点击态颜色
 $-button-primary-plain-active-color: mixColor($-color-white, $-color-black, 0.9373320899803692) !default; // 主要按钮点击态颜色
 $-button-primary-disabled-color: $-color-theme-light !default; // 主要按钮禁用颜色
