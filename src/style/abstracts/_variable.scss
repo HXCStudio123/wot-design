@@ -46,7 +46,7 @@ $-color-theme-emph: mix($-color-black, $-color-theme, 18%) !default; // 强调�
  * #33C2FF mixColor($-color-white, $-color-blue, 0.037960323165797775))
  */
 
-/* 文字颜色（默认浅色背景下） */
+ /* 文字颜色（默认浅色背景下） */
 $-color-title:  $-color-black !default;               // 模块标题/重要正文 000
 $-color-content:  mix($-color-black,$-color-white, 85%) !default;              // 普通正文 262626
 $-color-secondary:  mix($-color-black,$-color-white, 65%) !default;            // 次要信息，注释/补充/正文 595959
@@ -72,9 +72,11 @@ $-color-table-bg-indark: mix($-color-white,$-color-black, 2%) !default;      // 
 /* 透明度 */
 $-color-inlight-title-mask: mix($-color-black, $-color-white, 100%) !default;        // 模块标题/重要正文 000
 /* 图形颜色 */
-$-color-icon: $-color-border !default; // icon颜色
+$-color-icon: mix($-color-black, $-color-white, 15%) !default; // icon颜色
+$-color-icon-active: #eee !default; // icon颜色hover
+$-color-icon-disabled: #a7a7a7 !default; // icon颜色disabled
 /* modal */
-$-modal-bg: $-color-secondary !default;
+$-modal-bg: rgba($-color-black, 0.65) !default;
 
 /*----------------------------------------- Theme color. end -------------------------------------------*/
 
@@ -164,7 +166,7 @@ $-button-error-active-color: mix($-color-black, $-button-error-color, 18%) !defa
 $-button-error-disabled-color: mix($-color-white, $-button-error-color, 42%) !default; // 错误按钮禁用颜色
 $-button-suck-active-color: $-button-primary-plain-active-color !default; // 错误按钮禁用颜色
 
-$-button-border-color: $-color-secondary !default; // 默认按钮边框色
+$-button-border-color: mix($-color-black,$-color-white, 65%) !default; // 默认按钮边框色
 $-button-small-height: 28px !default; // 小型按钮高度
 $-button-small-padding: 0 12px !default; // 小型按钮padding
 $-button-small-fs: $-fs-secondary !default; // 小型按钮字号
@@ -185,9 +187,9 @@ $-button-large-round-radius: 22px !default; // 大型按钮round类型圆角大�
 $-button-large-loading: 18px !default; // 大小按钮loading图标大小
 $-button-suck-height: 50px !default; // suck 类型按钮高度
 $-button-icon-size: 40px !default; // icon 类型按钮尺寸
-$-button-icon-color: $-color-secondary !default; // icon 类型按钮颜色
-$-button-icon-active-color: $-color-border-light !default; // icon 类型按钮点击态颜色
-$-button-icon-disabled-color: $-color-tip !default; // icon 类型按钮禁用颜色
+$-button-icon-color: $-color-icon !default; // icon 类型按钮颜色
+$-button-icon-active-color: $-color-icon-active !default; // icon 类型按钮点击态颜色
+$-button-icon-disabled-color: $-color-icon-disabled !default; // icon 类型按钮禁用颜色
 
 /* cell */
 $-cell-group-title-fs: $-fs-title !default; // 组标题字号
@@ -196,7 +198,7 @@ $-cell-group-value-fs: $-fs-content !default; // 组值字号
 $-cell-group-value-color: $-color-content !default; // 组值文字颜色
 $-cell-padding: $-size-side-padding !default; // cell 左右padding距离
 $-cell-wrapper-padding: 11px $-cell-padding 11px 0 !default; // cell 容器padding
-$-cell-icon-height: 42px !default; // 图标高度
+$-cell-icon-height: 42px !default; // 图a标高度
 $-cell-icon-height-large: 44px !default; // 大尺寸图标高度
 $-cell-icon-right: $-cell-padding !default; // 图标距离右边缘
 $-cell-icon-size: 18px !default; // 图标大小
@@ -379,17 +381,21 @@ $-pull-refresh-tip-bg: $-color-theme !default; // 成功提示背景色
 $-pull-refresh-tip-fs: $-fs-secondary !default; // 成功提示字号
 
 /* radio */
+// TODO 与checkbox相同
 $-radio-margin: $-checkbox-margin !default; // 多个单选框距离
 $-radio-label-margin: $-checkbox-label-margin !default; // 右侧文字与左侧图标距离
-$-radio-size: $-checkbox-size !default; // 左侧图标尺寸
+$-radio-size: 18px !default; // 左侧图标尺寸
 $-radio-border-color: $-checkbox-border-color !default; // 左侧图标边框颜色
-$-radio-label-fs: $-checkbox-label-fs !default; // 右侧文字字号
-$-radio-label-color: $-checkbox-label-color !default; // 右侧文字颜色
+$-radio-label-fs: 16px !default; // 右侧文字字号
+$-radio-label-color: rgba($-color-black, 0.85) !default; // 右侧文字颜色
 $-radio-checked-color: $-checkbox-checked-color !default; // 选中颜色
 $-radio-disabled-color: $-checkbox-disabled-color !default; // 禁用颜色
-$-radio-disabled-label-color: $-checkbox-disabled-label-color !default; // 禁用文字颜色
-$-radio-button-radius: $-checkbox-button-radius !default; // 按钮圆角大小
-$-radio-check-size: 10px !default; // 选中圆点大小
+$-radio-disabled-label-color: rgba($-color-black, 0.25) !default; // 禁用文字颜色
+$-radio-disabled-border-color: mix($-color-black,$-color-white, 25%) !default; // 禁用文字颜色
+$-radio-button-radius: 16px !default; // 按钮圆角大小
+$-radio-button-bg-color: mix($-color-black,$-color-white, 4%) !default; // 按钮圆角大小
+$-radio-button-fs: 14px !default; // 按钮圆角大小
+$-radio-check-size: 12px !default; // 选中圆点大小
 
 /* search */
 $-search-side-padding: $-size-side-padding !default; // 左右间距
@@ -488,11 +494,14 @@ $-toast-padding: 8px 14px !default; // 无图标的padding
 $-toast-side-padding: $-size-side-padding !default; //左右两边最小留白宽度
 $-toast-radius: 8px !default; // 圆角大小
 $-toast-bg: $-modal-bg !default; // 背景色
+$-toast-modal-bg: rgba($-color-white, 0.9) !default; // 背景色
 $-toast-fs: $-fs-content !default; // 字号
 $-toast-with-icon-min-width: 150px !default; // 有图标的情况下最小宽度
-$-toast-with-icon-padding: 18px 15px 15px !default; // 有图标的padding
+$-toast-with-icon-max-width: 300px !default; // 有图标的情况下最大宽度
+$-toast-with-icon-padding: 16px 24px !default; // 有图标的padding
 $-toast-icon-size: 39px !default; // 图标大小
 $-toast-loading-padding: 10px !default; // loading 下的padding
+$-toast-box-sizing: 0px 6px 16px 0px rgba($-color-black, 0.08) !default; // loading 下的padding
 
 /* tooltip */
 $-tooltip-bg: $-modal-bg !default; // 背景色

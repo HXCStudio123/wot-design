@@ -93,6 +93,22 @@ Toast.success = options => {
   return Toast(options)
 }
 
+Toast.info = options => {
+  if (typeof options === 'string') {
+    options = {
+      msg: options,
+      iconName: 'info'
+    }
+  } else {
+    options = {
+      ...options,
+      iconName: 'info'
+    }
+  }
+
+  return Toast(options)
+}
+
 Toast.error = options => {
   if (typeof options === 'string') {
     options = {

@@ -4,7 +4,7 @@
     <transition name="wd-fade">
       <div v-show="show" class="wd-toast__container" :class="customClass">
         <div class="wd-toast__body">
-          <wd-loading v-if="iconName === 'loading'" :class="msg ? 'wd-toast__loading' : ''" :type="loadingType" color="#fff" />
+          <wd-loading v-if="iconName === 'loading'" class="wd-toast__icon" :type="loadingType" size="42px" color="#fff" />
           <i v-if="iconName && iconName !== 'loading'" class="wd-toast__icon" :class="[ iconNameToClass ]"></i>
           <i v-else-if="iconClass" class="wd-toast__icon" :class="iconClass.split(' ')"></i>
           <div class="wd-toast__msg">{{ msg }}</div>
@@ -31,11 +31,11 @@ export default {
       default: 'middle'
     },
     show: Boolean,
+    forbidClick: Boolean,
     loadingType: {
       type: String,
-      default: 'circle'
-    },
-    forbidClick: Boolean
+      default: 'circle-outline'
+    }
   },
   computed: {
     customClass () {
@@ -62,11 +62,13 @@ export default {
     iconNameToClass () {
       switch (this.iconName) {
         case 'success':
-          return 'wd-icon-success'
+          return 'wd-icon__toast--success'
         case 'error':
-          return 'wd-icon-error'
+          return 'wd-icon__toast--error'
         case 'warning':
-          return 'wd-icon-warning'
+          return 'wd-icon__toast--warning'
+        case 'info':
+          return 'wd-icon__toast--info'
         default:
           return ''
       }

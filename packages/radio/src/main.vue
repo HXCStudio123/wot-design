@@ -4,10 +4,13 @@
     :class="{
       'is-checked': isChecked,
       'is-button': finalShape === 'button',
+      'is-icon-check': finalShape === 'icon-check',
       'is-disabled': finalDisabled,
       'is-inline': inline
     }"
   >
+      <!-- check样式单选 -->
+    <i class="wd-radio__icon-check wd-icon-check-round" :style="{ 'color': isChecked && finalShape === 'icon-check' && !finalDisabled ? finalCheckedColor : '' }"/>
     <span class="wd-radio__shape" :style="{ 'color': isChecked && !finalDisabled ? finalCheckedColor : '' }">
       <i
         class="wd-radio__check"
@@ -24,6 +27,7 @@
         @change="handleChange"
       />
     </span>
+    <!-- 按钮单选 -->
     <div class="wd-radio__label" :style="{ 'color': isChecked && finalShape === 'button' && !finalDisabled ? finalCheckedColor : '' }">
       <slot></slot>
     </div>

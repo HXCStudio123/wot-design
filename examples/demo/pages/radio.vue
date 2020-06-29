@@ -12,10 +12,16 @@
         <wd-radio value="2">单选框2</wd-radio>
       </wd-radio-group>
     </demo-block>
-    <demo-block title="修改形状">
+    <demo-block title="修改形状-icon-check">
+      <wd-radio-group v-model="value7" shape="icon-check">
+        <wd-radio value="1">标签</wd-radio>
+        <wd-radio value="2">标签</wd-radio>
+      </wd-radio-group>
+    </demo-block>
+    <demo-block title="修改形状-button">
       <wd-radio-group v-model="value3" shape="button">
-        <wd-radio value="1">京麦</wd-radio>
-        <wd-radio value="2">商家后台</wd-radio>
+        <wd-radio value="1">标签</wd-radio>
+        <wd-radio value="2">标签</wd-radio>
       </wd-radio-group>
     </demo-block>
     <demo-block title="修改选中颜色">
@@ -26,6 +32,10 @@
     </demo-block>
     <demo-block title="禁用">
       <wd-radio-group v-model="value5" disabled style="margin-bottom: 10px;">
+        <wd-radio value="1">京麦</wd-radio>
+        <wd-radio value="2">商家后台</wd-radio>
+      </wd-radio-group>
+      <wd-radio-group v-model="value6" shape="icon-check" disabled>
         <wd-radio value="1">京麦</wd-radio>
         <wd-radio value="2">商家后台</wd-radio>
       </wd-radio-group>
@@ -46,7 +56,8 @@ export default {
       value3: '1',
       value4: '1',
       value5: '1',
-      value6: '1'
+      value6: '1',
+      value7: '1'
     }
   }
 }

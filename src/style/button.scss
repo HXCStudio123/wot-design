@@ -232,7 +232,7 @@
       );
       border: 1px solid;
       box-shadow: none;
-      &:active {
+      &:not(.is-loading):active {
         background-color: $-button-primary-plain-active-color;
       }
       @include when(disabled) {
