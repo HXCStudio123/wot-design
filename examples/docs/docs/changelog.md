@@ -1,5 +1,46 @@
 ## 更新日志
 
+### 2.0.0
+
+*2020-08-07*
+
+#### 新特性
+
+- CheckboxGroup
+  - 新增属性 `cell`, 支持复选框组下的表单模式事件 (by [@HXCStudio123](https://github.com/HXCStudio123) )
+- RadioGroup
+  - 新增属性 `cell`, 支持单选组下的表单模式事件 (by [@HXCStudio123](https://github.com/HXCStudio123) )
+  - 新增属性 `size`, 支持单选框尺寸更改（normal、small） (by [@HXCStudio123](https://github.com/HXCStudio123) )
+- Picker
+  - 新增属性 `columns-height`, 支持设置 picker 内部的单个 pickerView 高 (by [@HXCStudio123](https://github.com/HXCStudio123) )
+  - 新增属性 `range` 支持区域选择picker。(by [@HXCStudio123](https://github.com/HXCStudio123) )
+  - 属性 `value` 添加 `Object` 格式，用来支持区域选择下的 上方picker选中值 及 下方picker选中值，格式为{ start: '', end: '' }。 (by [@HXCStudio123](https://github.com/HXCStudio123) )
+  - 属性 `columns` 添加 `Object` 格式，用来支持区域选择下的 上方picker数据 及 下方picker数据，格式为{ start: '', end: '' }。 (by [@HXCStudio123](https://github.com/HXCStudio123) )
+  - 新增事件 `column-change-end` 接收 pickerView 实例（**区域选择模式下的底部 pickerView 示例**）、选中项、当前修改列的下标、resolve 作为入参，根据选中项和列下标进行判断，通过 pickerView 实例暴露出来的 `setColumnData` 方法修改其他列的数据源。(by [@HXCStudio123](https://github.com/HXCStudio123) )
+  - 移除属性 `itemHeight` (by [@HXCStudio123](https://github.com/HXCStudio123) )
+  - 新增默认插槽，可更改默认唤起 picker 的形式（默认为cell）。(by [@HXCStudio123](https://github.com/HXCStudio123) )
+  - 新增插槽 `range-separator`，区域选择时，中间展示的分隔符插槽。(by [@HXCStudio123](https://github.com/HXCStudio123) )
+- PickerView
+  - 新增属性 `columns-height`, 支持设置 pickerView 高 (by [@HXCStudio123](https://github.com/HXCStudio123) )
+  - 移除属性 `itemHeight` (by [@HXCStudio123](https://github.com/HXCStudio123) )
+  - 将 pickerView 交互形式更改为滚筒交互。 (by [@HXCStudio123](https://github.com/HXCStudio123) )
+
+
+#### Bug 修复
+
+- Checkbox
+  - 修复复选框组禁用模式下，单项禁用失效问题 (by [@HXCStudio123](https://github.com/HXCStudio123) )
+
+#### 优化
+
+- DropMenu
+  - 标题修改为水平居中 (by [@yawuling](https://github.com/yawuling) )
+- Doc
+  - Grid 文档补全页面导航 (by [@yawuling](https://github.com/yawuling) )
+  - Swipe 文档暴露 `prev`，`next`，`swipeTo` 方法 (by [@yawuling](https://github.com/yawuling) )
+  - 优化文档的响应式 (by [@yawuling](https://github.com/yawuling) )
+  - 添加爬虫文件sitemap，优化搜索功能 (by [@HXCStudio123](https://github.com/HXCStudio123) )
+
 ### 1.5.1
 
 *2020-05-18*

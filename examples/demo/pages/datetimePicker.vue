@@ -22,6 +22,25 @@
     <demo-block title="值靠右展示" transparent>
       <wd-datetime-picker v-model="value12" label="日期选择" align-right />
     </demo-block>
+    <demo-block title="唤起项插槽">
+      <div class="text">当前时间：<span>{{value14}}</span></div>
+      <wd-datetime-picker v-model="value14">
+        <wd-button type="primary">唤起picker</wd-button>
+      </wd-datetime-picker>
+    </demo-block>
+    <demo-block title="时间区间选择">
+      <div class="text">
+        开始时间:
+        <span>{{value14[0]}}</span>
+      </div>
+      <div class="text">
+        结束时间:
+        <span>{{value14[1]}}</span>
+      </div>
+      <wd-datetime-picker v-model="value14" region>
+        <wd-button type="primary">唤起picker</wd-button>
+      </wd-datetime-picker>
+    </demo-block>
   </div>
 </template>
 
@@ -40,7 +59,17 @@ export default {
       value9: new Date(),
       value10: new Date(),
       value11: '',
-      value12: new Date()
+      value12: new Date(),
+      value13: new Date(),
+      value14: [
+        new Date(2012, 10, 10, 10, 10),
+        new Date(2013, 10, 11, 10, 10)
+      ]
+    }
+  },
+  watch: {
+    value1 (val) {
+      console.log(val)
     }
   },
   methods: {
@@ -81,3 +110,13 @@ export default {
   }
 }
 </script>
+<style scoped lang="scss">
+.text {
+  margin-bottom: 10px;
+  color: rgba(0, 0, 0, 0.65);
+
+  span {
+    color: #34d19d;
+  }
+}
+</style>

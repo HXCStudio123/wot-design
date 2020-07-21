@@ -151,7 +151,6 @@ export default {
 | loading | 加载中 | boolean | - | false |
 | arrow-html | 是否使用html渲染选择器内容 | boolean | - | true |
 | visible-item-count | 展示的行数 | number | - | 7 |
-| item-height | 选项高度 | number | - | 33 |
 | disabled | 禁用 | boolean | - | fasle |
 | readonly | 只读 | boolean | - | false |
 | formatter | 自定义弹出层选项文案的格式化函数，返回一个字符串 | function | - | - |

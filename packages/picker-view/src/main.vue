@@ -1,11 +1,10 @@
 <template>
   <div class="wd-picker-view">
-    <div class="wd-picker-view__columns" :style="{ 'height': itemHeight * visibleItemCount + 'px' }">
+    <div class="wd-picker-view__columns" :style="`height: ${columnsHeight}px`">
       <wd-picker-view-column
         v-for="(column, index) in formatColumns"
         :key="index"
         :visible-item-count="visibleItemCount"
-        :item-height="itemHeight"
         :arrow-html="arrowHtml"
         :value="value instanceof Array ? value[index] : value"
         :initial-data="column"
@@ -13,10 +12,9 @@
         :label-key="labelKey"
         @change="onChange(index)"
       />
-      <div class="wd-picker-view__mask" :style="{ 'background-size': `100% ${itemHeight * (visibleItemCount - 1) / 2}px` }"></div>
-      <div class="wd-picker-view__select" :style="{ 'height': `${itemHeight}px` }"></div>
+      <div class="wd-picker-view__mask" :style="{ 'background-size': '100% 45%' }"></div>
       <div v-if="loading" class="wd-picker-view__loading">
-        <wd-loading size="30px" color="#0083ff" />
+        <wd-loading size="30px" />
       </div>
     </div>
   </div>
@@ -87,6 +85,7 @@ export default {
   methods: {
     onChange (columnIndex) {
       if (this.columnChange) {
+        // 列项修改参数：当前pickerView实例、要修改的列项数组、列项、回调函数（执行修改）
         this.columnChange(this, this.getColumnItem(columnIndex) || {}, columnIndex, () => {
           this.handleChange(columnIndex)
         })
@@ -142,6 +141,7 @@ export default {
     getColumnData (columnIndex) {
       return (this.children[columnIndex] || {}).data
     },
+
     setColumnData (columnIndex, data) {
       const column = this.children[columnIndex]
       if (column && JSON.stringify(column.data) !== JSON.stringify(data)) {

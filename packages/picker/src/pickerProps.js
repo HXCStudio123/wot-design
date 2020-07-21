@@ -11,5 +11,16 @@ export default {
   size: String,
   labelWidth: String,
   error: Boolean,
-  alignRight: Boolean
+  region: Boolean,
+  alignRight: Boolean,
+  columnChange: Function,
+  columnChangeEnd: Function,
+  valueKey: {
+    type: String,
+    default: 'value'
+  },
+  labelKey: {
+    type: String,
+    default: 'label'
+  }
 }

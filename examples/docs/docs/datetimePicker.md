@@ -215,6 +215,16 @@ export default {
 </script>
 ```
 
+### 唤起项插槽
+
+设置默认插槽修改唤起picker组件的形式。
+
+```html
+<wd-datetime-picker v-model="value" :columns="columns">
+  <wd-button type="primary">插槽唤起</wd-button>
+</wd-datetime-picker>
+```
+
 ### Attributes
 
 | 参数      | 说明                                 | 类型      | 可选值       | 默认值   |
@@ -224,7 +234,7 @@ export default {
 | loading | 加载中 | boolean | - | false |
 | arrow-html | 是否使用html渲染选择器内容 | boolean | - | true |
 | visible-item-count | 展示的行数 | number | - | 7 |
-| item-height | 选项高度 | number | - | 33 |
+| columns-height | picker内部滚筒高 | number | - | 217 |
 | title | 弹出层标题 | string | - | - |
 | cancel-button-text | 取消按钮文案 | string | - | '取消' |
 | confirm-button-text | 确认按钮文案 | string | - | '完成' |
@@ -247,15 +257,16 @@ export default {
 | align-right | 选择器的值靠右展示 | boolean | - | false |
 | before-confirm | 确定前校验函数，接收 (value, resolve) 参数，通过 resolve 继续执行 picker，resolve 接收1个boolean参数 | function | - | - |
 
+### Slot
+
+| name      | 说明       |
+|------------- |----------- |
+| default | 唤起picker的展示形式，不设置则展示cell表单样式 |
+| label | 左侧标题插槽 |
+
 ### Events
 
 | 事件名称      | 说明                                 | 参数     |
 |------------- |------------------------------------ |--------- |
 | confirm | 点击右侧按钮触发 | - |
 | cancel | 点击左侧按钮触发 | - |
-
-### Slot
-
-| name      | 说明       |
-|------------- |----------- |
-| label | 左侧标题插槽 |

@@ -8,8 +8,8 @@ export default {
     type: Number,
     default: 7
   },
-  itemHeight: {
+  columnsHeight: {
     type: Number,
-    default: 33
+    default: 217
   }
 }

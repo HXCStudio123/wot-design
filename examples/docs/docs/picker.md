@@ -222,16 +222,70 @@ export default {
 </script>
 ```
 
+### 区域选择
+
+设置 `range` 开启区域选择，`columns` 设置数据源，`v-model` 设置选中项的值。
+
+区域选择内部包含两个pickerView组件，通过控制数据`columns`、`value`中的 start end 分别设置另个pickerView数据。
+
+当开启区域选择时，`columns`、`value`为 `object`，格式为 `{ start: '', end: '' }`，传入 `column-change`、`column-change-end` 属性 分别控制两个picker的数据change。
+
+```html
+<wd-picker range :columns="columns" label="区域选择" v-model="value" :columns-height="100"/>
+
+<script>
+export default {
+  data () {
+    return {
+      columns: {
+        start: ['选项1', '选项2', '选项3', '选项4', '选项5', '选项6', '选项7'],
+        end: ['选项1', '选项2', '选项3', '选项4', '选项5', '选项6', '选项7']
+      },
+      value: {
+        start: '',
+        end: ''
+      }
+    }
+  },
+  methods: {
+    beforeConfirm (value, resolve) {
+      this.isLoading = true
+      setTimeout(() => {
+        this.isLoading = false
+        if (['选项2', '选项3'].indexOf(value) > -1) {
+          resolve(false)
+          this.$toast('选项校验不通过，请重新选择')
+        } else {
+          resolve(true)
+        }
+      }, 2000)
+    }
+  }
+}
+</script>
+```
+
+### 唤起项插槽
+
+设置默认插槽修改唤起picker组件的形式。
+
+```html
+<wd-picker v-model="value" :columns="columns">
+  <wd-button type="primary">插槽唤起</wd-button>
+</wd-picker>
+```
+
 ### Attributes
 
 | 参数      | 说明                                 | 类型      | 可选值       | 默认值   |
 |---------- |------------------------------------ |---------- |------------- |-------- |
-| value/v-model | 选中项，如果为多列选择器，则其类型应为数组 | string / number / boolean / array | - |
-| columns | 选择器数据，可以为字符串数组，也可以为对象数组，如果为二维数组，则为多列选择器 | array | - | - |
+| value/v-model | 选中项，如果为多列选择器，则其类型应为数组，如果为对象格式则为区域选择，对象格式为： { start: '', end: '' } | string / number / boolean / array / Object| - |
+| columns | 选择器数据，可以为字符串数组，也可以为对象数组，如果为二维数组，则为多列选择器；若为对象，则为区域选择，对象格式为： { start: '', end: '' } | array / object | - | - |
 | loading | 加载中 | boolean | - | false |
+| range | 是否开启区域选择 | boolean | - | false |
 | arrow-html | 是否使用html渲染选择器内容 | boolean | - | true |
 | visible-item-count | 展示的行数 | number | - | 7 |
-| item-height | 选项高度 | number | - | 33 |
+| columns-height | pickerView高 | number | - | 217 |
 | value-key | 选项对象中，value对应的 key | string | - | 'label' |
 | label-key | 选项对象中，展示的文本对应的 key | string | - | 'value' |
 | title | 弹出层标题 | string | - | - |
@@ -243,11 +297,20 @@ export default {
 | readonly | 只读 | boolean | - | false |
 | display-format | 自定义展示文案的格式化函数，返回一个字符串 | function | - | - |
 | column-change | 接收 pickerView 实例、选中项、当前修改列的下标、resolve 作为入参，根据选中项和列下标进行判断，通过 pickerView 实例暴露出来的 `setColumnData` 方法修改其他列的数据源。 | function | - | - |
+| column-change-end | 接收 pickerView 实例（**区域选择模式下的底部 pickerView 示例**）、选中项、当前修改列的下标、resolve 作为入参，根据选中项和列下标进行判断，通过 pickerView 实例暴露出来的 `setColumnData` 方法修改其他列的数据源。 | function | - | - |
 | size | 设置选择器大小 | string | 'large' | - |
 | label-width | 设置左侧标题宽度 | string | - | '33%' |
 | error | 是否为错误状态，错误状态时右侧内容为红色 | boolean | - | false |
 | align-right | 选择器的值靠右展示 | boolean | - | false |
 | before-confirm | 确定前校验函数，接收 (value, resolve) 参数，通过 resolve 继续执行 picker，resolve 接收1个boolean参数 | function | - | - |
+
+### Slot
+
+| name      | 说明       |
+|------------- |----------- |
+| default | 唤起picker的展示形式，不设置则展示cell表单样式 |
+| label | cell展示时，左侧展示文案 |
+| range-separator | 区域选择时，中间展示的分隔符插槽 |
 
 ### Events
 
