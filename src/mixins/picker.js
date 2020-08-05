@@ -4,6 +4,7 @@ import pickerProps from 'wot-design/packages/picker/src/pickerProps'
 
 export default {
   mixins: [locale],
+
   data () {
     return {
       currentTarget: this,
@@ -12,10 +13,12 @@ export default {
       popupShow: false
     }
   },
+
   props: {
     ...pickerViewProps,
     ...pickerProps
   },
+
   components: {
     CustomCell: {
       render (h) {
@@ -72,6 +75,20 @@ export default {
       }
     }
   },
+
+  computed: {
+    customClass () {
+      const rootClass = ['wd-picker']
+      this.error && rootClass.push('is-error')
+      this.alignRight && rootClass.push('is-align-right')
+      this.disabled && rootClass.push('is-disabled')
+      this.size && rootClass.push(`is-${this.size}`)
+      this.label | this.$slots.default && rootClass.push('is-cell')
+
+      return rootClass.join(' ')
+    }
+  },
+
   methods: {
     showPopup () {
       if (this.disabled || this.readonly) return
@@ -80,26 +97,6 @@ export default {
       this.popupShow = true
     },
 
-    setShowValue (timePicker = false) {
-      let label1 = ''
-      let label2 = ''
-      const pickerView = this.timePicker ? this.$refs.pickerView.$refs.pickerView : this.$refs.pickerView
-
-      if (this.displayFormat) {
-        const items = pickerView.getItems()
-        label1 = this.displayFormat(items)
-
-        this.showValue = this.region ? label1 + '-' + label2 : label1
-        return
-      }
-
-      const labels = pickerView.getLabels()
-      label1 = labels.length === 1
-        ? labels[0]
-        : labels.join(',')
-
-      this.showValue = this.region ? label1 + '-' + label2 : label1
-    },
     getPickerView (pickerView = true) {
       return this.$refs[pickerView ? 'pickerView' : 'endPickerView']
     }

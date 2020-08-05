@@ -22,7 +22,7 @@ export default {
     // 初始化值
     return {
       // 格式化初始值（当前选中值）
-      innerValue: this.formatValue(this.value),
+      innerValue: this.region ? this.formatRegion(this.value) : this.formatValue(this.value),
       // 日期选项数组，将日期拆分成picker的每一列的选项
       pickerValue: this.getPickerValue(this.value)
     }
@@ -78,7 +78,10 @@ export default {
         ]
       }
 
-      return this.getRangesList(this.innerValue)
+      return this.region ? [
+        this.getRangesList(this.innerValue[0]),
+        this.getRangesList(this.innerValue[1])
+      ] : this.getRangesList(this.innerValue)
     },
     originColumns () {
       /**
@@ -103,27 +106,31 @@ export default {
           }
         })
       }
-
-      return mapRange(this.ranges)
+      const start = this.region ? mapRange(this.ranges[0], 'start') : mapRange(this.ranges)
+      const end = this.region ? mapRange(this.ranges[1], 'end') : ''
+      return this.region ? [start, end] : start
     },
     columns () {
-      if (this.columnFormatter) {
-        // 禁用特殊处理函数
-        // const disabled = this.region && (type === 'start' || type === 'end') ? this.regionFilterRules(type, columns, cindex, index, value) : false
-        // console.log(this.regionFilterRules('start', columns, cindex, value, this.pickerValue, ''))
-        return this.columnFormatter(this.originColumns, this.ranges)
-      } else {
-        const mapColumns = (columns, type) => {
-          // 此时index是最外层知道当前的索引即可得到当前是哪个时间段
-          return columns.map((column, cindex) => {
-            return column.values.map((value, index) => {
-              return {
-                label: this.formatter ? this.formatter(column.type, padZero(value)) : padZero(value),
-                value
-              }
-            })
+      const mapColumns = (columns, type) => {
+        // 此时index是最外层知道当前的索引即可得到当前是哪个时间段
+        return columns.map((column, cindex) => {
+          return column.values.map((value, index) => {
+            const disabled = this.region && (type === 'start' || type === 'end') ? this.regionFilterRules(type, columns, cindex, index, value) : false
+
+            return {
+              label: this.formatter ? this.formatter(column.type, padZero(value)) : padZero(value),
+              value,
+              disabled
+            }
           })
-        }
+        })
+      }
+      if (this.region) {
+        return [
+          mapColumns(this.originColumns[0], 'start'),
+          mapColumns(this.originColumns[1], 'end')
+        ]
+      } else {
         return mapColumns(this.originColumns)
       }
     }
@@ -135,7 +142,7 @@ export default {
         // console.log('更改了', val, this.innerValue, oldVal && val.valueOf() === this.innerValue.valueOf())
         if (oldVal && val.valueOf() === this.innerValue.valueOf()) return
         // 格式化新值
-        val = this.formatValue(val)
+        val = this.region ? [this.formatValue(val[0]), this.formatValue(val[1])] : this.formatValue(val)
         // 当前 value 赋值
         this.innerValue = val
         // 每一列选择器数据赋值
@@ -154,11 +161,84 @@ export default {
   },
 
   methods: {
+    /**
+     * 区域选择time规则
+     * @param {String} type 时间段类型 start | end
+     * @param {Array} column 当前数组
+     * @param {Number} cindex 外层column的索引
+     * @param {Number} index 当前值的在column索引
+     * @param {Number / String} value 当前值
+     */
+    regionFilterRules (type, columns, cIndex, index, value) {
+      // 0年 1月 2日 3時 4分
+      // startPicker 除最小值外 还需要有一个时间限制, endPicker 时间选择后, startPicker 的 添加一个时间限制limit min->limit
+      // endPicker 除最小值外 还需要有一个时间限制, startPicker 时间选择后, endPicker 的 添加一个时间限制limit limit->max
+      const currentValue = {
+        start: this.getValueArray(this.innerValue[0]),
+        end: this.getValueArray(this.innerValue[1])
+      }
+      const limit = type === 'start' ? currentValue.end : currentValue.start
+      const column = columns[cIndex]
+      // 根据当前选择年确认
+      const year = limit[0] || (type === 'end' ? this.minYear : this.maxYear)
+      const month = limit[1] || (type === 'end' ? this.minMonth : this.maxMonth)
+      const date = limit[2] || (type === 'end' ? this.minDate : this.maxDate)
+      const hour = limit[3] || (type === 'end' ? this.minHour : this.maxHour)
+      const minute = limit[4] || (type === 'end' ? this.minMinute : this.maxMinute)
+
+      if (type === 'start') {
+        if (column.type === 'year') {
+          return value > year
+        }
+        if (column.type === 'month') {
+          return currentValue.start[0] === year && (value > month)
+        }
+        if (column.type === 'date') {
+          if (currentValue.start[0] === year && currentValue.start[1] === month) {
+            return value > date
+          }
+        }
+        if (column.type === 'hour') {
+          if (currentValue.start[0] === year && currentValue.start[1] === month && currentValue.start[2] === date) {
+            return value > hour
+          }
+        }
+        if (column.type === 'minute') {
+          if (currentValue.start[0] === year && currentValue.start[1] === month && currentValue.start[2] === date && currentValue.start[3] === hour) {
+            return value > minute
+          }
+        }
+      } else if (type === 'end') {
+        if (column.type === 'year') {
+          return value < year
+        }
+        if (column.type === 'month') {
+          if (currentValue.end[0] === year) {
+            return value < month
+          }
+        }
+        if (column.type === 'date') {
+          if (currentValue.end[0] === year && currentValue.end[1] === month) {
+            return value < date
+          }
+        }
+        if (column.type === 'hour') {
+          if (currentValue.end[0] === year && currentValue.end[1] === month && currentValue.end[2] === date) {
+            return value < hour
+          }
+        }
+        if (column.type === 'minute') {
+          if (currentValue.end[0] === year && currentValue.end[1] === month && currentValue.end[2] === date && currentValue.end[3] === hour) {
+            return value < minute
+          }
+        }
+      }
+      return false
+    },
     // 获取区间范围列表
     getRangesList (value) {
       const { maxYear, maxMonth, maxDate, maxHour, maxMinute } = this.getBoundary('max', value)
       const { minYear, minMonth, minDate, minHour, minMinute } = this.getBoundary('min', value)
-
       const result = [
         {
           type: 'year',
@@ -192,7 +272,13 @@ export default {
     },
     // 将当前的 value 格式化后，按照年月日时分秒拆分成数组
     getPickerValue (value) {
-      return value ? this.getValueArray(this.formatValue(value)) : ''
+      if (this.region) {
+        const start = value[0] ? this.getValueArray(this.formatValue(value[0])) : ''
+        const end = value[1] ? this.getValueArray(this.formatValue(value[1])) : ''
+        return [start, end]
+      } else {
+        return value ? this.getValueArray(this.formatValue(value)) : ''
+      }
     },
     formatDisplay (items) {
       if (this.displayFormat) return this.displayFormat(items)
@@ -285,38 +371,74 @@ export default {
       const pickerView = this.$refs.pickerView || this.$getPickerView()
       let values = ''
 
-      values = pickerView.getValues()
+      if (this.region) {
+        const endPickerView = this.$refs.endPickerView || this.getPickerView(false)
+        values = [pickerView.getValues(), endPickerView.getValues()]
+      } else {
+        values = pickerView.getValues()
+      }
 
       if (this.type === 'time') {
-        this.innerValue = `${padZero(values[0])}:${padZero(values[1])}`
+        this.innerValue = this.region ? [
+          `${padZero(values[0][0])}:${padZero(values[0][1])}`,
+          `${padZero(values[1][0])}:${padZero(values[1][1])}`
+        ] : `${padZero(values[0])}:${padZero(values[1])}`
         return
       }
 
       // 处理年份 索引位0
-      const year = values[0] && parseInt(values[0])
+      const year = this.region ? [
+        values[0] && values[0][0] && parseInt(values[0][0]),
+        values[1] && values[1][0] && parseInt(values[1][0])
+      ] : values[0] && parseInt(values[0])
 
       // 处理月 索引位1
-      const month = values[1] && parseInt(values[1])
+      const month = this.region ? [
+        values[0] && values[0][1] && parseInt(values[0][1]),
+        values[1] && values[1][1] && parseInt(values[1][1])
+      ] : values[1] && parseInt(values[1])
 
-      const maxDate = getMonthEndDay(year, month)
+      const maxDate = this.region ? getMonthEndDay(year[0], month[0]) : getMonthEndDay(year, month)
+      const endMaxDate = this.region ? getMonthEndDay(year[1], month[1]) : ''
 
       // 处理 date 日期 索引位2
-      let date = 1
+      let date = this.region ? [1, 1] : 1
       if (this.type !== 'year-month') {
-        date = (values[2] && parseInt(values[2])) > maxDate ? maxDate : (values[2] && parseInt(values[2]))
+        if (this.region) {
+          date = [
+            (values[0][2] && parseInt(values[0][2])) > maxDate ? maxDate : (values[0][2] && parseInt(values[0][2])),
+            (values[1][2] && parseInt(values[1][2])) > endMaxDate ? endMaxDate : (values[1][2] && parseInt(values[1][2]))
+          ]
+        } else {
+          date = (values[2] && parseInt(values[2])) > maxDate ? maxDate : (values[2] && parseInt(values[2]))
+        }
       }
 
       // 处理 时分 索引位3，4
-      let hour = 0
-      let minute = 0
+      let hour = this.region ? [0, 0] : 0
+      let minute = this.region ? [0, 0] : 0
 
       if (this.type === 'datetime') {
-        hour = values[3] && parseInt(values[3])
-        minute = values[4] && parseInt(values[4])
+        if (this.region) {
+          hour = [
+            values[0][3] && parseInt(values[0][3]),
+            values[1][3] && parseInt(values[1][3])
+          ]
+          minute = [
+            values[0][4] && parseInt(values[0][4]),
+            values[1][4] && parseInt(values[1][4])
+          ]
+        } else {
+          hour = values[3] && parseInt(values[3])
+          minute = values[4] && parseInt(values[4])
+        }
       }
-      const value = new Date(year, month - 1, date, hour, minute)
+      const value = this.region ? [
+        new Date(year[0], month[0] - 1, date[0], hour[0], minute[0]),
+        new Date(year[1], month[1] - 1, date[1], hour[1], minute[1])
+      ] : new Date(year, month - 1, date, hour, minute)
 
-      this.innerValue = this.formatValue(value)
+      this.innerValue = this.region ? this.formatRegion(value) : this.formatValue(value)
     },
     // picker列项更改矫正
     onColumnChange (pickerView, item, columnIndex, resolve) {
@@ -327,12 +449,21 @@ export default {
     updateColumnValues () {
       this.displayColumns = this.columns
       // 区分时间范围 还是 普通计时
-      const values = this.getValueArray(this.innerValue)
+      const values = this.region ? [
+        this.getValueArray(this.innerValue[0]),
+        this.getValueArray(this.innerValue[1])
+      ] : this.getValueArray(this.innerValue)
 
       this.$nextTick(() => {
         // 根据数组 设置 pickerView 值
         const pickerView = this.$refs.pickerView || this.getPickerView()
-        pickerView.setValues(values)
+        if (this.region) {
+          const endPickerView = this.$refs.endPickerView || this.etPickerView(false)
+          pickerView.setValues(values[0])
+          endPickerView.setValues(values[1])
+        } else {
+          pickerView.setValues(values)
+        }
       })
     },
     // 将日期拆分成数组

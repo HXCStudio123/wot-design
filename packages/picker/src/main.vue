@@ -33,6 +33,7 @@ export default {
     WdPopup,
     WdPickerView
   },
+
   data () {
     return {
       // 开始
@@ -41,10 +42,12 @@ export default {
       displayColumns: []
     }
   },
+
   props: {
     columns: [Array, Object],
     value: [String, Number, Boolean, Array]
   },
+
   watch: {
     value: {
       handler () {
@@ -63,18 +66,7 @@ export default {
       immediate: true
     }
   },
-  computed: {
-    customClass () {
-      const rootClass = ['wd-picker']
-      this.error && rootClass.push('is-error')
-      this.alignRight && rootClass.push('is-align-right')
-      this.disabled && rootClass.push('is-disabled')
-      this.size && rootClass.push(`is-${this.size}`)
-      this.label | this.$slots.default && rootClass.push('is-cell')
 
-      return rootClass.join(' ')
-    }
-  },
   methods: {
     onCancel () {
       this.displayColumns = this.lastColumns
@@ -102,6 +94,23 @@ export default {
       this.$emit('input', this.pickerValue)
       this.popupShow = false
       this.$emit('confirm')
+    },
+
+    setShowValue () {
+      const pickerView = this.$refs.pickerView
+
+      if (this.displayFormat) {
+        const items = pickerView.getItems()
+        this.showValue = this.displayFormat(items)
+        return
+      }
+
+      const labels = pickerView.getLabels()
+      const label = labels.length === 1
+        ? labels[0]
+        : labels.join(',')
+
+      this.showValue = label
     }
   }
 }
