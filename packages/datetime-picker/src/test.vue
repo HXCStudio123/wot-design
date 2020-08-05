@@ -6,22 +6,19 @@
       <!-- 开始 -->
       <wd-picker-view
         ref="pickerView"
-        v-model="innerValue"
-        :type="type"
-        :columns="displayColumns"
+        v-model="pickerValue[0]"
+        :columns="region ? displayColumns[0] : displayColumns"
         :loading="loading"
-        :filter="filter"
-        :formatter="formatter"
         :arrow-html="arrowHtml"
         :visible-item-count="visibleItemCount"
         :value-key="valueKey"
         :label-key="labelKey"
         :columns-height="columnsHeight"
-        :column-change="test"
+        :column-change="onColumnChange"
       />
       <!-- 结束 -->
       <!-- 如果有结束事件那么是范围选择模式，该模式仅在时间选择下有效 -->
-      <!-- <div v-if="region">
+      <div v-if="region">
         <slot name="region-separator">
           <div class="wd-picker__region-separator">至</div>
         </slot>
@@ -37,56 +34,20 @@
           :label-key="labelKey"
           :column-change="onColumnChange"
         />
-      </div>-->
+      </div>
     </wd-popup>
   </div>
 </template>
 <script>
 import pickerMixin from 'wot-design/src/mixins/picker'
-import WdPickerView from 'wot-design/packages/datetime-picker-view'
-// import DatetimePickerView from 'wot-design/src/mixins/datetimePickerView'
-import pickerViewProps from 'wot-design/packages/picker-view/src/pickerViewProps'
-import pickerProps from 'wot-design/packages/picker/src/pickerProps'
+import WdPickerView from 'wot-design/packages/picker-view'
+import DatetimePickerView from 'wot-design/src/mixins/datetimePickerView'
 
 export default {
   name: 'WdDatetimePicker',
-  mixins: [pickerMixin],
+  mixins: [DatetimePickerView, pickerMixin],
   components: {
     WdPickerView
-  },
-  data () {
-    return {
-      timePicker: true,
-      popupShow: false,
-      currentTarget: this,
-      pickerValue: this.value,
-      lastColumns: [],
-      displayColumns: []
-    }
-  },
-  props: {
-    value: null,
-    filter: Function,
-    formatter: Function,
-    type: String,
-    ...pickerViewProps,
-    ...pickerProps
-  },
-  watch: {
-    value: {
-      handler (val, oldVal) {
-        console.log(val)
-        // 存在旧值，新值与 innerValue 相同，则不作处理
-        if (oldVal && val.valueOf() === this.innerValue.valueOf()) return
-        // 格式化新值
-        // val = this.region ? [this.formatValue(val[0]), this.formatValue(val[1])] : this.formatValue(val)
-        // // 当前 value 赋值
-        this.innerValue = val
-        // 每一列选择器数据赋值
-        // this.pickerValue = val
-      },
-      immediate: true
-    }
   },
   computed: {
     customClass () {
@@ -120,43 +81,45 @@ export default {
       this.$nextTick(() => {
         this.$emit('input', this.innerValue)
         this.$emit('confirm')
-        this.setShowValue(true)
+        const items = this.$refs.pickerView.getItems()
+        const label1 = this.defaultDisplayFormat(items)
+        this.showValue = label1
       })
     },
     onCancel () {
       // reset innerValue
       // 格式化单个this.value.start
-      this.innerValue = this.value
+      this.displayColumns = this.lastColumns
+      this.innerValue = this.region ? this.formatRegion(this.value) : this.formatValue(this.value)
       this.popupShow = false
       this.$emit('cancel')
     },
     defaultDisplayFormat (items) {
-      // if (items.length === 0) return ''
-      // if (this.displayFormat) {
-      //   return this.displayFormat(items)
-      // }
-      // // 如果使用了自定义的的formatter，defaultDisplayFormat无效
-      // if (this.formatter) {
-      //   return this.getPickerView().getLabels().join('')
-      // }
-      // switch (this.type) {
-      //   case 'date':
-      //     return `${items[0].label}-${items[1].label}-${items[2].label}`
-      //   case 'year-month':
-      //     return `${items[0].label}-${items[1].label}`
-      //   case 'time':
-      //     return `${items[0].label}:${items[1].label}`
-      //   case 'datetime':
-      //     return `${items[0].label}-${items[1].label}-${items[2].label} ${items[3].label}:${items[4].label}`
-      // }
-    },
-    test () {
-      console.log('列项更改')
+      if (items.length === 0) return ''
+      if (this.displayFormat) {
+        return this.displayFormat(items)
+      }
+      // 如果使用了自定义的的formatter，defaultDisplayFormat无效
+      if (this.formatter) {
+        return this.getPickerView().getLabels().join('')
+      }
+      switch (this.type) {
+        case 'date':
+          return `${items[0].label}-${items[1].label}-${items[2].label}`
+        case 'year-month':
+          return `${items[0].label}-${items[1].label}`
+        case 'time':
+          return `${items[0].label}:${items[1].label}`
+        case 'datetime':
+          return `${items[0].label}-${items[1].label}-${items[2].label} ${items[3].label}:${items[4].label}`
+      }
     }
   },
   mounted () {
     this.$nextTick(() => {
-      this.setShowValue(true)
+      const items = this.$refs.pickerView.getItems()
+      const label1 = this.defaultDisplayFormat(items)
+      this.showValue = label1
     })
   }
 }

@@ -1,6 +1,6 @@
-import pickerViewProps from '../../packages/picker-view/src/pickerViewProps'
+import pickerViewProps from 'wot-design/packages/picker-view/src/pickerViewProps'
 import locale from 'wot-design/src/mixins/locale'
-import pickerProps from '../../packages/picker/src/pickerProps'
+import pickerProps from 'wot-design/packages/picker/src/pickerProps'
 
 export default {
   mixins: [locale],
@@ -75,22 +75,25 @@ export default {
   methods: {
     showPopup () {
       if (this.disabled || this.readonly) return
-      this.lastColumns = this.$refs.pickerView.getColumnsData()
+      const pickerView = this.timePicker ? this.$refs.pickerView.$refs.pickerView : this.$refs.pickerView
+      this.lastColumns = pickerView.getColumnsData()
       this.popupShow = true
     },
 
     setShowValue (timePicker = false) {
       let label1 = ''
       let label2 = ''
+      const pickerView = this.timePicker ? this.$refs.pickerView.$refs.pickerView : this.$refs.pickerView
+
       if (this.displayFormat) {
-        const items = this.$refs.pickerView.getItems()
+        const items = pickerView.getItems()
         label1 = this.displayFormat(items)
 
         this.showValue = this.region ? label1 + '-' + label2 : label1
         return
       }
 
-      const labels = this.$refs.pickerView.getLabels()
+      const labels = pickerView.getLabels()
       label1 = labels.length === 1
         ? labels[0]
         : labels.join(',')

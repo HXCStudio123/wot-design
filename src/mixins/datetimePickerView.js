@@ -29,6 +29,7 @@ export default {
   },
   props: {
     ...pickerViewProps,
+    // datetime / 'date' / 'year-month' / 'time' | datetimerange / 'daterange' / 'year-monthrange' / 'timerange'
     type: {
       type: String,
       default: 'datetime'
@@ -138,7 +139,7 @@ export default {
       handler (val, oldVal) {
         // 存在旧值，新值与 innerValue 相同，则不作处理
         // console.log('更改了', val, this.innerValue, oldVal && val.valueOf() === this.innerValue.valueOf())
-        // if (oldVal && val.valueOf() === this.innerValue.valueOf()) return
+        if (oldVal && val.valueOf() === this.innerValue.valueOf()) return
         // 格式化新值
         val = this.region ? [this.formatValue(val[0]), this.formatValue(val[1])] : this.formatValue(val)
         // 当前 value 赋值
@@ -438,6 +439,7 @@ export default {
 
       this.innerValue = this.region ? this.formatRegion(value) : this.formatValue(value)
     },
+    // picker列项更改矫正
     onColumnChange (pickerView, item, columnIndex, resolve) {
       this.updateInnerValue()
       resolve()
