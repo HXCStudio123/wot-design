@@ -111,7 +111,7 @@ export default {
         // 禁用特殊处理函数
         // const disabled = this.region && (type === 'start' || type === 'end') ? this.regionFilterRules(type, columns, cindex, index, value) : false
         // console.log(this.regionFilterRules('start', columns, cindex, value, this.pickerValue, ''))
-        return this.columnFormatter(this.originColumns, this.ranges)
+        return this.columnFormatter(this, this.originColumns, this.ranges, this.value)
       } else {
         const mapColumns = (columns, type) => {
           // 此时index是最外层知道当前的索引即可得到当前是哪个时间段
