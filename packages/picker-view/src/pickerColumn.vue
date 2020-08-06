@@ -1,9 +1,9 @@
 <template>
-  <div class="wd-picker-view-wrapper" :style="'height: ' + visibleItemHeight + 'px;'">
+  <div class="wd-picker-view-wrapper">
+    <!-- 滚轮 -->
     <ul
       ref="roller"
       class="wd-picker-view-roller"
-      :style="'top: ' + (visibleItemHeight / 2 - itemHeight / 2 ) + 'px;'"
     >
       <li
         v-for="(item, index) in data"
@@ -20,9 +20,9 @@
         @click="selectItem(index)"
       >{{ arrowHtml ? '' : getItemLabel(item) }}</li>
     </ul>
+    <!-- 竖向平铺单列数据 -->
     <div
       class="wd-picker-view-content"
-      :style="'top: ' + (visibleItemHeight / 2 - itemHeight / 2 ) + 'px;'"
     >
       <ul class="wd-picker-view-list" ref="list">
         <li
@@ -71,6 +71,7 @@ export default {
       data: this.initialData || []
     }
   },
+
   props: {
     arrowHtml: Boolean,
     visibleItemCount: Number,
@@ -88,25 +89,13 @@ export default {
     labelKey: String,
     valueKey: String
   },
+
   computed: {
     length () {
       return this.data.length
-    },
-    visibleItemHeight () {
-      const visible = Math.round(this.visibleItemCount > 7 ? 7 : (this.visibleItemCount < 1 ? 1 : this.visibleItemCount))
-
-      const heightMap = {
-        1: 35,
-        2: 35 + 33,
-        3: 35 + 33 * 2,
-        4: 35 + 33 * 2 + 28,
-        5: 35 + 33 * 2 + 28 * 2,
-        6: 35 + 33 * 2 + 28 * 2 + 20,
-        7: 35 + 33 * 2 + 28 * 2 + 20 * 2
-      }
-      return Number(heightMap[visible])
     }
   },
+
   watch: {
     value: {
       handler () {
@@ -131,6 +120,7 @@ export default {
       }
     }
   },
+
   methods: {
     isHidden (index) {
       if (index >= this.currentIndex + 9 || index <= this.currentIndex - 9) {
@@ -139,6 +129,14 @@ export default {
         return false
       }
     },
+
+    /**
+     * 滚动位置+角度设置
+     * @param {Number} offset 距离上一次移动的竖向距离
+     * @param {String} type 是否是结束滚动 值为'end'表示结束手势操作
+     * @param {Number} time 滚动手势持续时间
+     * @param {Boolean} change 是否动态改变当前选中的index 如果是true 那么向外传递
+     */
     setTransform (translateY = 0, type, time = MOMENTUM_DURATION, deg) {
       if (type === 'end') {
         this.$refs.list.style.webkitTransition = `transform ${time}ms cubic-bezier(0.19, 1, 0.22, 1)`
@@ -152,8 +150,15 @@ export default {
       this.scrollDistance = translateY
     },
 
-    setMove (move, type, time, change = true) {
-      let updateMove = move + this.transformY
+    /**
+     * 手势移动间距、滚动位置设置与当前选中index对应，对滚动角度添加限制
+     * @param {Number} offset 距离上一次移动的竖向距离
+     * @param {String} type 是否是结束滚动 值为'end'表示结束手势操作
+     * @param {Number} time 滚动手势持续时间
+     * @param {Boolean} change 是否动态改变当前选中的index 如果是true 那么向外传递
+     */
+    setMove (offset, type, time, change = true) {
+      let updateMove = offset + this.transformY
       this.moving = true
 
       if (type === 'end') {
@@ -200,12 +205,15 @@ export default {
         this.setTransform(updateMove, null, null, deg)
       }
     },
+
     getItemLabel (item) {
       return typeof item === 'object' && this.labelKey in item ? item[this.labelKey] : item
     },
+
     getItemValue (item) {
       return typeof item === 'object' && this.valueKey in item ? item[this.valueKey] : this.getItemLabel(item)
     },
+
     adjustIndex (index) {
       index = range(index, 0, this.length)
 
@@ -217,12 +225,14 @@ export default {
         if (typeof this.data[i] !== 'object' || !this.data[i].disabled) return i
       }
     },
+
     selectItem (index) {
       if (this.moving) return
 
       this.transformY = -this.currentIndex * this.itemHeight
       this.setMove((this.currentIndex - index) * this.itemHeight, 'end', MOMENTUM_DURATION)
     },
+
     setIndex (index, userAction = true) {
       index = this.adjustIndex(index)
 
@@ -234,36 +244,39 @@ export default {
         }
       }
     },
+
     onTouchStart (event) {
       const changedTouches = event.changedTouches[0]
       this.touchParams.startY = changedTouches.pageY
       this.touchParams.startTime = event.timestamp || Date.now()
       this.transformY = this.scrollDistance
     },
+
     onTouchMove (event) {
       event.preventDefault()
       const changedTouches = event.changedTouches[0]
       this.touchParams.lastY = changedTouches.pageY
       this.touchParams.lastTime = event.timestamp || Date.now()
-      const move = this.touchParams.lastY - this.touchParams.startY
-      this.setMove(move)
+      const offset = this.touchParams.lastY - this.touchParams.startY
+      this.setMove(offset)
     },
 
     onTouchEnd (event) {
       const changedTouches = event.changedTouches[0]
       this.touchParams.lastY = changedTouches.pageY
       this.touchParams.lastTime = event.timestamp || Date.now()
-      let move = this.touchParams.lastY - this.touchParams.startY
+      let offset = this.touchParams.lastY - this.touchParams.startY
 
       let moveTime = this.touchParams.lastTime - this.touchParams.startTime
       if (moveTime <= MOMENTUM_LIMIT_DURATION) {
-        move = move * 2
+        offset = offset * 2
         moveTime = moveTime + MOMENTUM_DURATION
-        this.setMove(move, 'end', moveTime)
+        this.setMove(offset, 'end', moveTime)
       } else {
-        this.setMove(move, 'end')
+        this.setMove(offset, 'end')
       }
     },
+
     getValue () {
       let item = this.data[this.selectedIndex]
 
@@ -271,9 +284,11 @@ export default {
         return this.getItemValue(this.data[this.selectedIndex])
       }
     },
+
     getLabel () {
       return this.getItemLabel(this.data[this.selectedIndex])
     },
+
     setValue (value) {
       for (let i = 0; i < this.length; i++) {
         if (this.getItemValue(this.data[i]) === value && !this.data[i].disabled) {
@@ -283,11 +298,13 @@ export default {
       }
     }
   },
+
   created () {
     if (this.$parent.children) {
       this.$parent.children.push(this)
     }
   },
+
   mounted () {
     // 初始化位置 函数
     this.$nextTick(() => {
@@ -298,6 +315,7 @@ export default {
       this.$el.addEventListener('touchcancel', this.onTouchEnd)
     })
   },
+
   beforeDestroy () {
     // 移除监听
     this.$el.removeEventListener('touchstart', this.onTouchStart)
@@ -305,6 +323,7 @@ export default {
     this.$el.removeEventListener('touchend', this.onTouchEnd)
     this.$el.removeEventListener('touchcancel', this.onTouchEnd)
   },
+
   destroyed () {
     const { children } = this.$parent
 

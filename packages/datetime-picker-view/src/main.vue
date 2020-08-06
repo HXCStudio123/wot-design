@@ -3,10 +3,10 @@
     ref="pickerView"
     v-model="pickerValue"
     :columns="columns"
-    :visible-item-count="visibleItemCount"
     :loading="loading"
     :arrow-html="arrowHtml"
     :column-change="onColumnChange"
+    :columns-height="columnsHeight"
     @change="handleChange"
   />
 </template>

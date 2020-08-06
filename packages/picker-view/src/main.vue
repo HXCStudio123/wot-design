@@ -4,7 +4,6 @@
       <wd-picker-view-column
         v-for="(column, index) in formatColumns"
         :key="index"
-        :visible-item-count="visibleItemCount"
         :arrow-html="arrowHtml"
         :value="value instanceof Array ? value[index] : value"
         :initial-data="column"
@@ -33,11 +32,13 @@ export default {
     WdPickerViewColumn,
     WdLoading
   },
+
   data () {
     return {
       children: []
     }
   },
+
   props: {
     ...pickerViewProps,
     value: [String, Number, Boolean, Array],
@@ -64,6 +65,7 @@ export default {
       return this.isSingle ? [this.columns] : this.columns
     }
   },
+
   watch: {
     columns () {
       let formatColumns = this.isSingle ? [this.columns] : this.columns
@@ -82,6 +84,7 @@ export default {
       immediate: true
     }
   },
+
   methods: {
     onChange (columnIndex) {
       if (this.columnChange) {
@@ -93,6 +96,7 @@ export default {
         this.handleChange(columnIndex)
       }
     },
+
     handleChange (columnIndex) {
       if (this.isSingle) {
         let value = this.getColumnValue(columnIndex)
@@ -104,33 +108,40 @@ export default {
         this.$emit('change', this, value, columnIndex)
       }
     },
+
     getValues () {
       return this.children.map(column => {
         return column.getValue()
       })
     },
+
     setValues (values) {
       this.children.forEach((column, index) => {
         column.setValue(values[index])
       })
     },
+
     getLabels () {
       return this.children.map(column => {
         return column.getLabel()
       })
     },
+
     getColumnValue (columnIndex) {
       const column = this.children[columnIndex]
       return column && column.getValue()
     },
+
     getColumnIndex (columnIndex) {
       return (this.children[columnIndex] || {}).selectedIndex
     },
+
     getItems () {
       return this.children.map(column => {
         return column.data[column.selectedIndex]
       })
     },
+
     getColumnItem (columnIndex) {
       const column = this.children[columnIndex]
 
@@ -138,6 +149,7 @@ export default {
         return column.data[column.selectedIndex]
       }
     },
+
     getColumnData (columnIndex) {
       return (this.children[columnIndex] || {}).data
     },
@@ -149,14 +161,17 @@ export default {
         column.setIndex(0, false)
       }
     },
+
     getColumnsData () {
       return this.children.map(column => {
         return column.data
       })
     },
+
     onCancel () {
       this.$emit('cancel')
     },
+
     onConfirm () {
       this.children.forEach(column => column.onTranstionEnd())
       if (this.isSingle) {

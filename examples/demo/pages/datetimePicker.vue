@@ -31,18 +31,21 @@
         <wd-button type="primary">唤起picker</wd-button>
       </wd-datetime-picker>
     </demo-block>
-    <demo-block title="时间区间选择">
-      <div class="text">
-        开始时间:
-        <span>{{value15[0]}}</span>
+    <demo-block title="时间区间选择" transparent>
+      <wd-datetime-picker v-model="value16" label="日期选择" type="datetimerange"></wd-datetime-picker>
+      <div class="range-wrapper">
+        <div class="text">
+          开始时间:
+          <span>{{value15[0]}}</span>
+        </div>
+        <div class="text">
+          结束时间:
+          <span>{{value15[1]}}</span>
+        </div>
+        <wd-datetime-picker v-model="value15" type="datetimerange" :columns-height="100">
+          <wd-button type="primary">唤起picker</wd-button>
+        </wd-datetime-picker>
       </div>
-      <div class="text">
-        结束时间:
-        <span>{{value15[1]}}</span>
-      </div>
-      <wd-datetime-picker v-model="value15" type="datetimerange">
-        <wd-button type="primary">唤起picker</wd-button>
-      </wd-datetime-picker>
     </demo-block>
   </div>
 </template>
@@ -66,6 +69,10 @@ export default {
       value13: new Date(),
       value14: new Date(2012, 10, 10, 10, 10),
       value15: [
+        new Date(2012, 10, 10, 10, 10),
+        new Date(2013, 10, 11, 10, 10)
+      ],
+      value16: [
         new Date(2012, 10, 10, 10, 10),
         new Date(2013, 10, 11, 10, 10)
       ]
@@ -122,5 +129,10 @@ export default {
   span {
     color: #34d19d;
   }
+}
+.range-wrapper {
+  padding: 15px 15px;
+  background-color: #fff;
+  border-top: 1px solid rgba(0,0,0,0.04);
 }
 </style>

@@ -81,9 +81,7 @@ export default {
     },
     columns () {
       if (this.columnFormatter) {
-        // 禁用特殊处理函数
-        // const disabled = this.region && (type === 'start' || type === 'end') ? this.regionFilterRules(type, columns, cindex, index, value) : false
-        // console.log(this.regionFilterRules('start', columns, cindex, value, this.pickerValue, ''))
+        // 禁用特殊处理函数, 外部传入
         return this.columnFormatter(this, this.originColumns, this.ranges, this.value)
       } else {
         const mapColumns = (columns, type) => {
@@ -157,12 +155,14 @@ export default {
 
       return result
     },
+
     formatRegion (value) {
       return [
         this.formatValue(value[0]),
         this.formatValue(value[1])
       ]
     },
+
     // 将当前的 value 格式化后，按照年月日时分秒拆分成数组
     getPickerValue (value) {
       return value ? this.getValueArray(this.formatValue(value)) : ''
@@ -180,6 +180,7 @@ export default {
 
       return `${padZero(items[0].value)}:${padZero(items[1].value)}`
     },
+
     // 格式化当前日期 value
     formatValue (value) {
       // 显示小时：分钟
@@ -208,6 +209,7 @@ export default {
       // 转换为date格式
       return new Date(value)
     },
+
     /**
      * 获取边界分界线
      * @param {String} type 边界类型 value = max / min
@@ -253,9 +255,10 @@ export default {
         [`${type}Minute`]: minute
       }
     },
+
     // 更新inner
     updateInnerValue () {
-      const pickerView = this.$refs.pickerView || this.$getPickerView()
+      const pickerView = this.$refs.pickerView || this.getPickerView()
       let values = ''
 
       values = pickerView.getValues()
@@ -291,11 +294,13 @@ export default {
 
       this.innerValue = this.formatValue(value)
     },
+
     // picker列项更改矫正
     onColumnChange (pickerView, item, columnIndex, resolve) {
       this.updateInnerValue()
       resolve()
     },
+
     // 更新列数据
     updateColumnValues () {
       this.displayColumns = this.columns
@@ -308,6 +313,7 @@ export default {
         pickerView.setValues(values)
       })
     },
+
     // 将日期拆分成数组
     getValueArray (value) {
       if (this.type === 'time') {

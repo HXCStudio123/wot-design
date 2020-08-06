@@ -10,7 +10,6 @@
         :columns="displayColumns"
         :loading="loading"
         :arrow-html="arrowHtml"
-        :visible-item-count="visibleItemCount"
         :value-key="valueKey"
         :label-key="labelKey"
         :columns-height="columnsHeight"
@@ -71,8 +70,7 @@ export default {
     onCancel () {
       this.displayColumns = this.lastColumns
       this.pickerValue = this.value
-      this.popupShow = false
-      this.$emit('cancel')
+      this.handleClose()
     },
 
     onConfirm () {
@@ -83,16 +81,21 @@ export default {
       }
       if (this.beforeConfirm) {
         this.beforeConfirm(this.pickerValue, isPass => {
-          isPass && this.handleConfirm()
+          isPass && this.handleConfirm(this.pickerValue)
         })
       } else {
-        this.handleConfirm()
+        this.handleConfirm(this.pickerValue)
       }
+    },
+
+    columnsInit () {
+      const pickerView = this.$refs.pickerView
+      this.lastColumns = pickerView.getColumnsData()
     },
 
     handleConfirm () {
       this.$emit('input', this.pickerValue)
-      this.popupShow = false
+      this.closePopup()
       this.$emit('confirm')
     },
 

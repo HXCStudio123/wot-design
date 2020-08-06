@@ -1,6 +1,6 @@
 import pickerViewProps from 'wot-design/packages/picker-view/src/pickerViewProps'
-import locale from 'wot-design/src/mixins/locale'
 import pickerProps from 'wot-design/packages/picker/src/pickerProps'
+import locale from 'wot-design/src/mixins/locale'
 
 export default {
   mixins: [locale],
@@ -92,13 +92,16 @@ export default {
   methods: {
     showPopup () {
       if (this.disabled || this.readonly) return
-      const pickerView = this.timePicker ? this.$refs.pickerView.$refs.pickerView : this.$refs.pickerView
-      this.lastColumns = pickerView.getColumnsData()
+      this.columnsInit && this.columnsInit()
       this.popupShow = true
     },
 
-    getPickerView (pickerView = true) {
-      return this.$refs[pickerView ? 'pickerView' : 'endPickerView']
+    closePopup () {
+      this.popupShow = false
+    },
+
+    getPickerView () {
+      return this.$refs.pickerView
     }
   }
 }

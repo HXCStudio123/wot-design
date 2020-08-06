@@ -73,7 +73,6 @@ export default {
   data () {
     return {
       timePicker: true,
-      popupShow: false,
       currentTarget: this,
       innerValue: this.region ? this.value[0] : this.value,
       displayColumns: [],
@@ -119,7 +118,7 @@ export default {
   methods: {
     onConfirm () {
       if (this.loading) {
-        this.popupShow = false
+        this.closePopup()
         this.$emit('confirm')
         return
       }
@@ -131,20 +130,23 @@ export default {
         this.handleConfirm()
       }
     },
+
     handleConfirm () {
-      this.popupShow = false
+      this.closePopup()
+
       this.$nextTick(() => {
         this.$emit('input', this.region ? [this.innerValue, this.end.innerValue] : this.innerValue)
         this.$emit('confirm')
         this.setShowValue()
       })
     },
+
     onCancel () {
       // reset innerValue
       // 格式化单个this.value.start
       this.innerValue = this.region ? this.value[0] : this.value
       this.end.innerValue = this.value[1] || ''
-      this.popupShow = false
+      this.closePopup()
       this.$emit('cancel')
     },
     defaultDisplayFormat (items) {
@@ -172,12 +174,18 @@ export default {
     setShowValue () {
       const pickerView = this.$refs.pickerView.$refs.pickerView
       const items = pickerView.getItems()
-      const label = this.defaultDisplayFormat(items)
+      let label = this.defaultDisplayFormat(items)
+
+      if (this.region) {
+        const endPickerView = this.$refs.endPickerView.$refs.pickerView
+        const items1 = endPickerView.getItems()
+        label = label + ' 至 ' + this.defaultDisplayFormat(items1)
+      }
       this.showValue = label
     },
 
     /**
-     * 区域选择time规则
+     * 区域选择time禁用规则
      * @param {String} type 时间段类型 start | end
      * @param {Array} column 当前遍历到的列数组
      * @param {Number} cindex 外层column的索引（对应每一个类型）
@@ -187,8 +195,8 @@ export default {
      */
     columnDisabledRules (type, columns, cIndex, value, currentValue, boundary, ranges) {
       // 0年 1月 2日 3時 4分
-      // startPicker 除最小值外 还需要有一个时间限制, endPicker 时间选择后, startPicker 的 添加一个时间限制limit min->limit
-      // endPicker 除最小值外 还需要有一个时间限制, startPicker 时间选择后, endPicker 的 添加一个时间限制limit limit->max
+      // startPicker 除最小值外 还需要有一个时间限制, endPicker 时间选择后, startPicker 的 添加一个时间限制boundary min->boundary
+      // endPicker 除最小值外 还需要有一个时间限制, startPicker 时间选择后, endPicker 的 添加一个时间限制boundary boundary->max
       const column = columns[cIndex]
       // 根据当前选择年确认 ranges[0][0] minYear ranges[0][1] maxYear 以此类推
       const year = boundary[0] || (type === 'end' ? ranges[0][0] : ranges[0][1])
@@ -216,21 +224,28 @@ export default {
       return false
     },
 
-    customColumnFormatter (pickerView, originColumns, ranges, innerValue) {
+    /**
+     * 自定义列项筛选规则
+     * @param {Vue} pickerView pickerView 实例
+     * @param {Array} originColumns 选项数组
+     * @param {Array} ranges 范围数组
+     * @param {Date} value 当前 pickerView 实例传入值
+     */
+    customColumnFormatter (pickerView, originColumns, ranges, value) {
       const start = this.innerValue
       const end = this.end.innerValue
-      const type = innerValue === start ? 'start' : 'end'
+      const type = value === start ? 'start' : 'end'
 
       const boundary = type === 'start' ? pickerView.getPickerValue(end) : pickerView.getPickerValue(start)
-      innerValue = pickerView.getPickerValue(innerValue)
+      value = pickerView.getPickerValue(value)
       const mapColumns = (columns, type) => {
         // 此时index是最外层知道当前的索引即可得到当前是哪个时间段
         return columns.map((column, cIndex) => {
           return column.values.map((value, index) => {
-            const disabled = this.columnDisabledRules(type, columns, cIndex, value, innerValue, boundary, ranges)
+            const disabled = this.columnDisabledRules(type, columns, cIndex, value, value, boundary, ranges)
 
             return {
-              label: this.formatter ? this.formatter(column.type, padZero(value)) : padZero(value),
+              label: pickerView.formatter ? pickerView.formatter(column.type, padZero(value)) : padZero(value),
               value,
               disabled
             }
