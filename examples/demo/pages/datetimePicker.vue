@@ -32,7 +32,10 @@
       </wd-datetime-picker>
     </demo-block>
     <demo-block title="时间区间选择" transparent>
-      <wd-datetime-picker v-model="value16" label="日期选择" type="datetimerange"></wd-datetime-picker>
+      <wd-datetime-picker v-model="value16" label="时间区间选择" type="datetimerange" :columns-height="100"></wd-datetime-picker>
+      <wd-datetime-picker v-model="value17" label="分隔符插槽" type="datetimerange" :columns-height="100">
+        <div slot="region-separator" class="region-separator">分隔符</div>
+      </wd-datetime-picker>
       <div class="range-wrapper">
         <div class="text">
           开始时间:
@@ -75,18 +78,19 @@ export default {
       value16: [
         new Date(2012, 10, 10, 10, 10),
         new Date(2013, 10, 11, 10, 10)
+      ],
+      value17: [
+        new Date(2012, 10, 10, 10, 10),
+        new Date(2013, 10, 11, 10, 10)
       ]
     }
   },
-  watch: {
-    value1 (val) {
-      console.log(val)
-    }
-  },
+
   methods: {
     displayFormat (items) {
       return `${items[0].label}年${items[1].label}月${items[2].label}日 ${items[3].label}:${items[4].label}`
     },
+
     formatter (type, value) {
       switch (type) {
         case 'year':
@@ -103,6 +107,7 @@ export default {
           return value
       }
     },
+
     filter (type, values) {
       if (type === 'minute') {
         return values.filter(value => value % 5 === 0)
@@ -110,6 +115,7 @@ export default {
 
       return values
     },
+
     beforeConfirm (value, resolve) {
       if (value.getTime() > Date.now()) {
         resolve(false)
@@ -133,6 +139,30 @@ export default {
 .range-wrapper {
   padding: 15px 15px;
   background-color: #fff;
-  border-top: 1px solid rgba(0,0,0,0.04);
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+.region-separator {
+  text-align: center;
+  position: relative;
+  margin: 10px 0;
+  color: rgba(0, 0, 0, 0.25);
+  &::after {
+    content: '';
+    position: absolute;
+    width: 50%;
+    height: 1px;
+    left: -30px;
+    top: 50%;
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    width: 50%;
+    height: 1px;
+    right: -30px;
+    top: 50%;
+    background-color: rgba(0, 0, 0, 0.04);
+  }
 }
 </style>

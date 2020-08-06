@@ -46,12 +46,6 @@
         <wd-button type="primary">插槽唤起</wd-button>
       </wd-picker>
     </demo-block>
-    <!-- <demo-block title="分隔符插槽">
-      <wd-picker :columns="columns5" v-model="value15" region>
-        <div slot="region-separator" class="region-separator">分隔符</div>
-        <wd-button type="primary">插槽唤起</wd-button>
-      </wd-picker>
-    </demo-block> -->
   </div>
 </template>
 
@@ -157,28 +151,5 @@ export default {
 <style scoped lang="scss">
 .text {
   margin-bottom: 10px;
-}
-.region-separator {
-  text-align: center;
-  position: relative;
-  color: rgba(0, 0, 0, 0.25);
-  &::after {
-    content: '';
-    position: absolute;
-    width: 50%;
-    height: 1px;
-    left: -30px;
-    top: 50%;
-    background-color: rgba(0, 0, 0, 0.04);
-  }
-  &::before {
-    content: '';
-    position: absolute;
-    width: 50%;
-    height: 1px;
-    right: -30px;
-    top: 50%;
-    background-color: rgba(0, 0, 0, 0.04);
-  }
 }
 </style>

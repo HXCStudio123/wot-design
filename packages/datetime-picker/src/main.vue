@@ -228,16 +228,16 @@ export default {
      * 自定义列项筛选规则
      * @param {Vue} pickerView pickerView 实例
      * @param {Array} originColumns 选项数组
-     * @param {Array} ranges 范围数组
+     * @param {Array} ranges pickerView 范围数组
      * @param {Date} value 当前 pickerView 实例传入值
      */
-    customColumnFormatter (pickerView, originColumns, ranges, value) {
+    customColumnFormatter (pickerView, originColumns, ranges, currentValue) {
       const start = this.innerValue
       const end = this.end.innerValue
-      const type = value === start ? 'start' : 'end'
+      const type = currentValue === start ? 'start' : 'end'
 
       const boundary = type === 'start' ? pickerView.getPickerValue(end) : pickerView.getPickerValue(start)
-      value = pickerView.getPickerValue(value)
+      currentValue = pickerView.getPickerValue(currentValue)
       const mapColumns = (columns, type) => {
         // 此时index是最外层知道当前的索引即可得到当前是哪个时间段
         return columns.map((column, cIndex) => {
