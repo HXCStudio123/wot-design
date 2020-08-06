@@ -7,15 +7,21 @@
       <wd-picker-view
         ref="pickerView"
         v-model="innerValue"
-        :type="type"
+        :type="dateType"
         :loading="loading"
         :filter="filter"
         :formatter="formatter"
         :arrow-html="arrowHtml"
         :value-key="valueKey"
         :label-key="labelKey"
+        :min-date="minDate"
+        :max-date="maxDate"
+        :min-hour="minHour"
+        :max-hour="maxHour"
+        :max-minute="maxMinute"
+        :min-minute="minMinute"
         :columns-height="columnsHeight"
-        :column-formatter="customColumnFormatter"
+        :column-formatter="region ? customColumnFormatter : null"
       />
       <!-- 结束 -->
       <!-- 如果有结束事件那么是范围选择模式，该模式仅在时间选择下有效 -->
@@ -26,13 +32,20 @@
         <wd-picker-view
           ref="endPickerView"
           v-model="end.innerValue"
+          :type="dateType"
           :loading="loading"
           :filter="filter"
           :formatter="formatter"
           :arrow-html="arrowHtml"
-          :columns-height="columnsHeight"
           :value-key="valueKey"
           :label-key="labelKey"
+          :min-date="endMinDate"
+          :max-date="endMaxDate"
+          :min-hour="endMinHour"
+          :max-hour="endMaxHour"
+          :max-minute="endMaxMinute"
+          :min-minute="endMinMinute"
+          :columns-height="columnsHeight"
           :column-formatter="customColumnFormatter"
         />
       </div>
@@ -43,6 +56,8 @@
 import pickerMixin from 'wot-design/src/mixins/picker'
 import WdPickerView from 'wot-design/packages/datetime-picker-view'
 import pickerViewProps from 'wot-design/packages/picker-view/src/pickerViewProps'
+import datetimePickerViewProps from 'wot-design/packages/datetime-picker-view/src/datetimePickerProps'
+import datetimeRangeProps from 'wot-design/packages/datetime-picker/src/datetimeRangeProps'
 import pickerProps from 'wot-design/packages/picker/src/pickerProps'
 import { padZero } from 'wot-design/src/utils'
 
@@ -71,17 +86,24 @@ export default {
 
   props: {
     value: null,
-    filter: Function,
-    formatter: Function,
     // datetime / 'date' / 'year-month' / 'time' | datetimerange / 'daterange' / 'year-monthrange' / 'timerange'
     type: {
       type: String,
       default: 'datetime'
     },
     ...pickerViewProps,
-    ...pickerProps
+    ...pickerProps,
+    ...datetimePickerViewProps,
+    ...datetimeRangeProps
   },
-
+  computed: {
+    region () {
+      return this.type.substring(this.type.length - 5, this.type.length) === 'range'
+    },
+    dateType () {
+      return this.region ? this.type.substring(0, this.type.length - 5) : this.type
+    }
+  },
   watch: {
     value: {
       handler (val, oldVal) {
@@ -135,7 +157,7 @@ export default {
         const pickerView = this.$refs.pickerView.$refs.pickerView
         return pickerView.getLabels().join('')
       }
-      switch (this.type) {
+      switch (this.dateType) {
         case 'date':
           return `${items[0].label}-${items[1].label}-${items[2].label}`
         case 'year-month':

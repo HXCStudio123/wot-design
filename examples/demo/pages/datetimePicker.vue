@@ -1,15 +1,6 @@
 <template>
   <div style="margin: 20px 0">
-
-    <!-- <wd-datetime-picker v-model="value1" label="日期选择" />
-    <wd-datetime-picker type="date" v-model="value2" label="年月日" />
-    <wd-datetime-picker type="year-month" v-model="value3" label="年月" />
-    <wd-datetime-picker type="time" v-model="value4" label="时分" />
-    <wd-datetime-picker v-model="value5" label="展示格式" :display-format="displayFormat" />
-    <wd-datetime-picker v-model="value7" label="过滤选项" :filter="filter" />
-    <wd-datetime-picker v-model="value6" label="内部格式" :formatter="formatter" /> -->
-
-    <!-- <div>
+    <div>
       <wd-datetime-picker v-model="value1" label="日期选择" />
       <wd-datetime-picker type="date" v-model="value2" label="年月日" />
       <wd-datetime-picker type="year-month" v-model="value3" label="年月" />
@@ -39,7 +30,7 @@
       <wd-datetime-picker v-model="value14">
         <wd-button type="primary">唤起picker</wd-button>
       </wd-datetime-picker>
-    </demo-block> -->
+    </demo-block>
     <demo-block title="时间区间选择">
       <div class="text">
         开始时间:
@@ -49,7 +40,7 @@
         结束时间:
         <span>{{value15[1]}}</span>
       </div>
-      <wd-datetime-picker v-model="value15" region>
+      <wd-datetime-picker v-model="value15" type="datetimerange">
         <wd-button type="primary">唤起picker</wd-button>
       </wd-datetime-picker>
     </demo-block>

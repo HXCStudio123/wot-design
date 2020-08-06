@@ -1,5 +1,6 @@
 import { padZero, range } from 'wot-design/src/utils'
-import pickerViewProps from '../../packages/picker-view/src/pickerViewProps'
+import pickerViewProps from 'wot-design/packages/picker-view/src/pickerViewProps'
+import datetimePickerViewProps from 'wot-design/packages/datetime-picker-view/src/datetimePickerProps'
 
 const times = (num, formatter) => {
   let index = -1
@@ -11,8 +12,6 @@ const times = (num, formatter) => {
 
   return array
 }
-
-const currentYear = new Date().getFullYear()
 
 const getMonthEndDay = (year, month) => {
   return 32 - new Date(year, month - 1, 32).getDate()
@@ -29,39 +28,13 @@ export default {
   },
   props: {
     ...pickerViewProps,
+    ...datetimePickerViewProps,
     // datetime / 'date' / 'year-month' / 'time' | datetimerange / 'daterange' / 'year-monthrange' / 'timerange'
     type: {
       type: String,
       default: 'datetime'
     },
-    value: null,
-    filter: Function,
-    formatter: Function,
-    columnFormatter: Function,
-    minHour: {
-      type: Number,
-      default: 0
-    },
-    maxHour: {
-      type: Number,
-      default: 23
-    },
-    minMinute: {
-      type: Number,
-      default: 0
-    },
-    maxMinute: {
-      type: Number,
-      default: 59
-    },
-    minDate: {
-      type: Date,
-      default: () => new Date(currentYear - 10, 0, 1)
-    },
-    maxDate: {
-      type: Date,
-      default: () => new Date(currentYear + 10, 11, 31)
-    }
+    value: null
   },
   computed: {
     // 年月日时分秒区间设置

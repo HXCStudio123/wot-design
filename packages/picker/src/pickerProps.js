@@ -11,7 +11,6 @@ export default {
   size: String,
   labelWidth: String,
   error: Boolean,
-  region: Boolean,
   alignRight: Boolean,
   columnChange: Function,
   columnChangeEnd: Function,
