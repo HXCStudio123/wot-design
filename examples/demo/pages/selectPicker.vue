@@ -1,21 +1,60 @@
+
 <template>
   <div>
-    <demo-block title="基本用法" transparent>
-      <wd-select-picker label="基本用法" :value="value1" :dataset="dataset1"></wd-select-picker>
-      <wd-select-picker label="单选" :value="value2" type="radio" :dataset="dataset1"></wd-select-picker>
-      <wd-select-picker label="禁用" :value="value3" :dataset="dataset1" disabled></wd-select-picker>
-      <wd-select-picker label="只读" :value="value4" :dataset="dataset1" readonly></wd-select-picker>
-      <wd-select-picker label="禁用选项" :value="value5" :dataset="dataset2"></wd-select-picker>
-      <wd-select-picker label="展示格式化" :value="value6" :dataset="dataset1" disabled></wd-select-picker>
-      <wd-select-picker label="标题" :value="value7" :dataset="dataset1" title="多选"></wd-select-picker>
-      <wd-select-picker label="错误" :value="value8" :dataset="dataset1" error></wd-select-picker>
-      <wd-select-picker label="必填" :value="value9" :dataset="dataset1" required></wd-select-picker>
-      <wd-select-picker label="值靠右展示" :value="value9" :dataset="dataset1" align-right></wd-select-picker>
+    <wd-cell-group border style="margin: 20px 0">
+      <wd-select-picker label="基本用法" v-model="value1" :columns="columns1"></wd-select-picker>
+      <wd-select-picker label="类型切换" v-model="value2" type="radio" :columns="columns1"></wd-select-picker>
+      <wd-select-picker label="禁用" v-model="value3" :columns="columns1" disabled></wd-select-picker>
+      <wd-select-picker label="只读" v-model="value4" :columns="columns1" readonly></wd-select-picker>
+      <wd-select-picker label="loading" v-model="value5" :columns="columns1" loading></wd-select-picker>
+      <wd-select-picker label="禁用选项" v-model="value6" :columns="columns2"></wd-select-picker>
+      <wd-select-picker
+        label="展示格式"
+        v-model="value7"
+        :columns="columns1"
+        :display-format="displayFormat"
+      ></wd-select-picker>
+      <wd-select-picker
+        label="before-confirm"
+        v-model="value8"
+        :columns="columns1"
+        :before-confirm="beforeConfirm"
+      />
+      <wd-select-picker label="标题" v-model="value9" :columns="columns1" title="多选"></wd-select-picker>
+      <wd-select-picker label="错误" v-model="value10" :columns="columns1" error></wd-select-picker>
+      <wd-select-picker label="必填" v-model="value11" :columns="columns1" required></wd-select-picker>
+      <wd-select-picker
+        label="change事件"
+        v-model="value12"
+        :columns="columns1"
+        @change="handleChange"
+      ></wd-select-picker>
+      <wd-select-picker label="值靠右展示" v-model="value13" :columns="columns1" align-right></wd-select-picker>
+    </wd-cell-group>
+    <demo-block title="label不传" transparent>
+      <wd-select-picker v-model="value14" :columns="columns1"></wd-select-picker>
     </demo-block>
-    <demo-block title="插槽">
-      <wd-select-picker label="内容插槽">
+    <demo-block title="大小" transparent>
+      <wd-select-picker label="大尺寸" v-model="value15" size="large" :columns="columns1"></wd-select-picker>
+    </demo-block>
+    <demo-block title="默认插槽">
+      <div class="text">
+        当前选中项：
+        <span>{{value14}}</span>
+      </div>
+      <wd-select-picker v-model="value16" :columns="columns1">
         <wd-button type="primary">默认唤起项</wd-button>
-        <div slot="content" class="showdemo">仅作为展示</div>
+      </wd-select-picker>
+    </demo-block>
+    <demo-block title="内容插槽">
+      <wd-select-picker @cancel="handleClose" @confirm="handleConfirm">
+        <div class="text bg">
+          点击此处唤起，当前值为：
+          <span>{{value17}}</span>
+        </div>
+        <div slot="content" class="showdemo">
+          <wd-input placeholder="请输入..." size="large" v-model="value17" @change="changeInput" />
+        </div>
       </wd-select-picker>
     </demo-block>
   </div>
@@ -25,47 +64,99 @@
 export default {
   data () {
     return {
-      dataset1: [
+      changeValue: '',
+      initValue: '',
+      columns1: [
         {
           value: '1',
-          label: '京麦1'
+          label: '京麦'
         },
         {
           value: '2',
-          label: '京麦2'
+          label: '京东金融'
         },
         {
           value: '3',
-          label: '京麦3'
+          label: '京me'
         }
       ],
-      dataset2: [
+      columns2: [
         {
           value: '1',
-          label: '京麦1',
+          label: '京麦',
           disabled: true
         },
         {
           value: '2',
-          label: '京麦2'
+          label: '京东金融'
         },
         {
           value: '3',
-          label: '京麦3'
+          label: '京me'
         }
       ],
       value1: ['1'],
       value2: '1',
-      value3: [],
-      value4: ['1'],
+      value3: ['2'],
+      value4: ['3'],
       value5: [],
       value6: [],
       value7: [],
       value8: [],
-      value9: []
+      value9: [],
+      value10: [],
+      value11: [],
+      value12: ['3'],
+      value13: ['2'],
+      value14: ['1'],
+      value15: ['3'],
+      value16: ['2'],
+      value17: '初始值'
     }
   },
+
+  created () {
+    this.initValue = this.value17
+  },
+
   methods: {
+    displayFormat (items) {
+      let showValue = ''
+      this.columns1.forEach(column => {
+        items.forEach((item, index) => {
+          if (column.value === item) {
+            showValue += `${item}: ${column.label} ${index + 1 < items.length ? '--' : ''} `
+          }
+        })
+      })
+      return showValue
+    },
+
+    beforeConfirm (value, resolve) {
+      if (value.length > 2) {
+        this.$toast.warning('最多只能选择两款产品')
+        resolve(false)
+      } else {
+        resolve(true)
+      }
+    },
+
+    handleChange (val) {
+      this.$toast.info(val.length === 0 ? '未选择' : val.toString())
+    },
+
+    changeInput (val) {
+      this.changeValue = val
+    },
+
+    handleClose () {
+      this.value17 = this.initValue
+    },
+
+    handleConfirm () {
+      this.value17 = this.changeValue
+      this.initValue = this.changeValue
+    }
   }
 }
 </script>
@@ -74,5 +165,18 @@ export default {
 .showdemo {
   text-align: center;
   padding: 25px;
+}
+.text {
+  margin-bottom: 10px;
+  color: rgba(0, 0, 0, 0.65);
+
+  span {
+    color: #34d19d;
+  }
+}
+.bg {
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 4px;
 }
 </style>

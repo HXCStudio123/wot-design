@@ -34,6 +34,7 @@
         </div>
       </slot>
     </div>
+    <!-- 弹出框 -->
     <wd-action-sheet
       v-model="pickerShow"
       :duration="250"
@@ -43,28 +44,55 @@
       <div class="wd-select-picker__wrapper">
         <slot name="content">
           <!-- 多选 -->
-          <wd-checkbox-group v-if="type === 'checkbox'" v-model="value" cell size="large">
+          <wd-checkbox-group
+            v-if="type === 'checkbox'"
+            v-model="selectList"
+            :cell="cell"
+            :size="selectSize"
+            :checked-color="checkedColor"
+            :inline="inline"
+            :min="min"
+            :max="max"
+            :shape="shape"
+            @change="handleChange"
+          >
             <wd-checkbox
-              v-for="(item, index) in dataset"
+              v-for="(item, index) in columns"
               :key="index"
               :value="item[valueKey]"
               :disabled="item.disabled"
             >{{item[labelKey]}}</wd-checkbox>
           </wd-checkbox-group>
           <!-- 单选 -->
-          <wd-radio-group v-if="type === 'radio'" v-model="value" size="large" cell>
+          <wd-radio-group
+            v-if="type === 'radio'"
+            v-model="selectList"
+            :cell="cell"
+            :size="selectSize"
+            :checked-color="checkedColor"
+            :inline="inline"
+            :shape="shape"
+            @change="handleChange"
+          >
             <wd-radio
-              v-for="(item, index) in dataset"
+              v-for="(item, index) in columns"
               :key="index"
               :value="item[valueKey]"
               :disabled="item.disabled"
             >{{item[labelKey]}}</wd-radio>
           </wd-radio-group>
         </slot>
+        <div v-if="loading" class="wd-picker-view__loading">
+          <wd-loading type="circular-ring" :color="loadingColor"/>
+        </div>
       </div>
-      <div class="footer">
-        <wd-button suck type="primary" @click="onConfirm">确定</wd-button>
-      </div>
+      <!-- 确认按钮 -->
+      <wd-button
+        suck
+        type="primary"
+        @click="onConfirm"
+        :disabled="loading"
+      >{{confirmButtonText || t('wd.picker.confirm')}}</wd-button>
     </wd-action-sheet>
   </div>
 </template>
@@ -77,9 +105,8 @@ import WdCheckboxGroup from 'wot-design/packages/checkbox-group'
 import WdRadio from 'wot-design/packages/radio'
 import WdRadioGroup from 'wot-design/packages/radio-group'
 import cellProps from 'wot-design/packages/select-picker/src/cellProps'
-
-// import WdLoading from 'wot-design/packages/loading'
-// import animateScrollLeft from 'wot-design/src/utils/animateScrollLeft'
+import selectProps from 'wot-design/packages/select-picker/src/selectProps'
+import WdLoading from 'wot-design/packages/loading'
 
 export default {
   name: 'WdSelectPicker',
@@ -89,54 +116,35 @@ export default {
     WdCheckbox,
     WdCheckboxGroup,
     WdRadio,
-    WdRadioGroup
+    WdRadioGroup,
+    WdLoading
   },
+
   data () {
     return {
       pickerShow: false,
-      currentCol: 0,
-      selectList: [],
-      pickerColSelected: [],
-      loading: false,
+      selectList: this.valueFormat(this.value),
       showValue: '',
-      isChange: false,
-      lastSelectList: [],
-      lastPickerColSelected: [],
-      lineStyle: {}
+      isConfirm: false,
+      lastSelectList: []
     }
   },
+
   props: {
     ...cellProps,
-    dataset: {
+    ...selectProps,
+    columns: {
       type: Array,
       default () {
         return []
       }
     },
     value: [Array, String, Number, Boolean],
-    // type: checkbox/radio/custom
+    // type: checkbox/radio
     type: {
       type: String,
       default: 'checkbox'
     },
-    // columns: {
-    //   type: Array,
-    //   required: true
-    // },
-    // label: String,
-    // labelWidth: String,
-    // disabled: Boolean,
-    // readonly: Boolean,
-    // placeholder: String,
-    // title: String,
-    // alignRight: Boolean,
-    // error: Boolean,
-    // required: Boolean,
-    // size: String,
-    // columnChange: {
-    //   type: Function,
-    //   required: true
-    // },
     displayFormat: Function,
     beforeConfirm: Function,
     valueKey: {
@@ -147,30 +155,99 @@ export default {
       type: String,
       default: 'label'
     },
-    loadingColor: String
+    selectSize: {
+      type: String,
+      default: 'large'
+    },
+    confirmButtonText: {
+      type: String,
+      default: '确定'
+    }
   },
+
   watch: {
     value: {
       handler (val) {
-        this.setShowValue()
+        this.selectList = this.valueFormat(val)
+        this.lastSelectList = this.selectList
+        this.setShowValue(this.selectList)
       },
       immediate: true
     }
   },
+
   methods: {
+    valueFormat (value) {
+      return this.type === 'checkbox' ? Array.prototype.slice.call(value) : value
+    },
+
+    handleChange (val) {
+      this.$emit('change', val)
+    },
+
     handlePickerClose () {
       // 未确定选项时，数据还原复位
-      this.$emit('close')
+      if (!this.isConfirm) {
+        this.selectList = this.valueFormat(this.lastSelectList)
+      }
+      this.$emit('cancel')
     },
+
     showPicker () {
       if (this.disabled || this.readonly) return
+      this.selectList = this.valueFormat(this.value)
       this.pickerShow = true
+      this.isConfirm = false
     },
+
     onConfirm () {
-      this.pickerShow = false
+      if (this.loading) {
+        this.pickerShow = false
+        this.$emit('confirm')
+        return
+      }
+      if (this.beforeConfirm) {
+        this.beforeConfirm(this.selectList, isPass => {
+          isPass && this.handleConfirm()
+        })
+      } else {
+        this.handleConfirm()
+      }
     },
-    setShowValue () {
-      this.showValue = this.value
+
+    handleConfirm () {
+      this.isConfirm = true
+      this.pickerShow = false
+      this.lastSelectList = this.valueFormat(this.selectList)
+      this.$emit('input', this.lastSelectList)
+      this.$emit('confirm')
+      this.setShowValue(this.lastSelectList)
+    },
+
+    setShowValue (value) {
+      if (this.displayFormat) {
+        this.showValue = this.displayFormat(value)
+      } else {
+        let showValue = ''
+        if (this.type === 'checkbox') {
+          value.length > 0 && value.forEach((item, index) => {
+            this.columns.forEach((column) => {
+              if (column[this.valueKey] === item) {
+                showValue += column[this.labelKey] + ' '
+              }
+            })
+          })
+        } else if (this.type === 'radio') {
+          this.columns.forEach((column) => {
+            if (column[this.valueKey] === value) {
+              showValue = column[this.labelKey]
+            }
+          })
+        } else {
+          showValue = value
+        }
+        this.showValue = showValue
+      }
     }
   }
 }
