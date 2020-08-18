@@ -18,6 +18,8 @@
       title: Cell 单元格
     - name: grid
       title: Grid 宫格
+    - name: indexes
+      title: Indexes 索引选择器
     - name: layout
       title: Layout 布局
     - name: navbar
