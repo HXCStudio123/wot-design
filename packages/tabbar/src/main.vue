@@ -3,8 +3,9 @@
     class="wd-tabbar"
     :class="{
       'is-border': border,
-      'is-fixed': fixed
-    }">
+      'is-fixed': fixed,
+    }"
+  >
     <slot></slot>
   </div>
 </template>
@@ -36,8 +37,10 @@ export default {
       if (typeof this.value === 'number') {
         value = this.value
       } else if (this.items.length) {
-        let activeItem = this.items.filter(item => item.name === this.value)
-        value = activeItem && this.items.indexOf(activeItem)
+        this.items.forEach((item, index) => {
+          if (item.name !== this.value) return
+          value = index
+        })
       }
 
       return value
