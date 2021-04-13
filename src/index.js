@@ -137,8 +137,7 @@ const components = [
   Tooltip,
   Upload,
   MessageBox.wdMessageBox,
-  ImgPreview.wdImgPreview,
-  ImgCropper.wdImgCropper
+  ImgPreview.wdImgPreview
 ]
 
 const install = (Vue, config = {}) => {
