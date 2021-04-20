@@ -2,10 +2,6 @@
   <div
     v-if="show"
     class="wd-img-cropper"
-<<<<<<< HEAD
-=======
-    @touchmove="preventTouchMove"
->>>>>>> upload: 添加预览列表配置
     :style="{ width: rootWidth, height: rootHeight }"
     ref="cropper"
   >
